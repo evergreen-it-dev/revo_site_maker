@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model package="create_site" baseClass="xPDOObject" platform="mysql" defaultEngine="MyISAM" version="1.1">
+    <object class="CreateSite" table="create_site" extends="xPDOSimpleObject">
+        <field key="status" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="0" />
+        <field key="name" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
+        <field key="context" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
+        <field key="description" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
+        <field key="siteurl" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
+        <field key="status_context" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="0" />
+        <field key="status_context_settings" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="0" />
+        <field key="status_media" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="0" />
+        <field key="media_name" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
+        <field key="user_group_id" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
+        <field key="status_access" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="0" />
+        <field key="status_user" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="0" />
+        <field key="status_migx" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="0" />
+        <field key="status_other" dbtype="tinyint" precision="1" attributes="unsigned" phptype="integer" null="false" default="0" />
+    </object>
+</model>

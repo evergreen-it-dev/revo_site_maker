@@ -1,0 +1,112 @@
+server {
+    listen 80;
+    server_name  ПОДДОМЕН.site.name.com.ua www.ПОДДОМЕН.site.name.com.ua;
+    rewrite ^(.*)$  https://ПОДДОМЕН.site.name.com.ua$1 permanent;
+}
+server {
+    listen  443 ssl http2;
+    server_name www.ПОДДОМЕН.site.name.com.ua;
+    rewrite ^(.*)$  https://ПОДДОМЕН.site.name.com.ua$1 permanent;
+
+        ssl_certificate /etc/letsencrypt/live/site.name.com.ua/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/site.name.com.ua/privkey.pem;
+
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_prefer_server_ciphers on;
+        ssl_dhparam /etc/ssl/certs/dhparam.pem;
+        ssl_ciphers EECDH:+AES256:-3DES:RSA+AES:RSA+3DES:!NULL:!RC4;
+        ssl_session_timeout 1d;
+        ssl_session_cache shared:SSL:50m;
+
+        ssl_stapling on;
+        resolver 8.8.8.8 77.88.8.8  valid=300s;
+        ssl_stapling_verify on;
+        add_header Strict-Transport-Security max-age=15768000;
+}
+
+server {
+    listen  443 ssl http2;
+    server_name ПОДДОМЕН.site.name.com.ua;
+    root /var/www/site.name.com.ua/www;
+    access_log  /var/www/site.name.com.ua/logs/access.log;
+    error_log  /var/www/site.name.com.ua/logs/error.log error;
+    autoindex off;
+    index  /sites/ПОДДОМЕН/index.php;
+    client_max_body_size 30M;
+
+        keepalive_timeout   60;
+        ssl_certificate /etc/letsencrypt/live/site.name.com.ua/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/site.name.com.ua/privkey.pem;
+
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_prefer_server_ciphers on;
+        ssl_dhparam /etc/ssl/certs/dhparam.pem;
+        ssl_ciphers EECDH:+AES256:-3DES:RSA+AES:RSA+3DES:!NULL:!RC4;
+        ssl_session_timeout 1d;
+        ssl_session_cache shared:SSL:50m;
+
+        ssl_stapling on;
+        resolver 8.8.8.8 77.88.8.8  valid=300s;
+        ssl_stapling_verify on;
+        add_header Strict-Transport-Security max-age=15768000;
+
+    location ~ /.well-known {
+        allow all;
+    }
+
+    include deny.conf;
+
+        location / {
+                if (!-e $request_filename) {
+                    rewrite ^/(.*)$ /sites/ПОДДОМЕН/index.php?q=$1 last;
+                }
+        }
+
+        location = /index.php {
+              rewrite ^/index.php$ / permanent;
+              rewrite ^/$ /sites/ПОДДОМЕН/index.php last;
+              rewrite ^/(.*)$ /sites/ПОДДОМЕН/index.php?q=$1 last;
+        }
+
+        location ~* ^/(en|ru)/assets {
+            rewrite ^/(en|ru)/assets(.*)$ /assets$2 break;
+        }
+
+        location ~* ^/(en|ru)/favicon.ico {
+            rewrite ^/(en|ru)/favicon.ico$ /favicon.ico break;
+        }
+
+        location ~* ^/(en|ru) {
+            rewrite ^/(en|ru)?/$ /sites/ПОДДОМЕН/index.php?cultureKey=$1 last;
+            rewrite ^/(en|ru)?/?(.*)$ /sites/ПОДДОМЕН/index.php?cultureKey=$1&q=$2 last;
+        }
+
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+                expires max;
+                log_not_found off;
+        }
+
+        location = /favicon.ico {
+                log_not_found off;
+                access_log off;
+        }
+
+        location = /robots.txt {
+                allow all;
+                log_not_found off;
+                access_log off;
+        }
+
+        location ~ \.php$ {
+            fastcgi_pass    unix:/run/php/php5.6-fpm.developer3.sock;
+#            fastcgi_pass    unix:/run/php/php7.0-fpm.developer3.sock;
+#            fastcgi_pass    unix:/run/php/php7.1-fpm.developer3.sock;
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            fastcgi_connect_timeout 75s;
+            fastcgi_read_timeout 300s;
+            fastcgi_send_timeout 300s;
+            include     fastcgi_params;
+        }
+
+}
